@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(`mongodb+srv://Ashik:01991393572@cluster0.y1bjv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,{
+mongoose.connect(`mongodb+srv://Ashik:${process.env.DB_PASS}@cluster0.y1bjv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,{
     useNewUrlParser:true, useUnifiedTopology:true,
 }).then(()=>{
     console.log("Server connected with db");

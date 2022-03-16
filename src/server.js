@@ -1,9 +1,10 @@
+require("dotenv").config()
 const express = require("express");
 const app = express();
 const nodemailer = require("nodemailer");
 const path = require("path");
 
-const port = 5000 || process.env.PORT;
+const port = 8443 || process.env.PORT;
 const Booking = require("./models/booking");
 const Request = require("./models/request");
 
@@ -34,12 +35,15 @@ app.post("/do-booking",async(req,res)=>{
         const result = await book.save();
 
         const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
+            host: "smtp-mail.outlook.com",
+            secureConnection: false,
+            port: 587,
+            tls: {
+               ciphers:'SSLv3'
+            },
             auth:{
-                user:"azizulhakimashik0188@gmail.com",
-                pass:"01991393572abc",
+                user:process.env.MAIL_USER,
+                pass:process.env.MAIL_PASS
             }
         });
 
@@ -102,7 +106,7 @@ app.post("/do-booking",async(req,res)=>{
         `
 
         const options = {
-            from:'"Homebuyer Assistant" <azizulhakimashik0188@gmail.com>',
+            from:'"Homebuyer Assistant" <no-reply.homebuyer@hotmail.com>',
             to:"info@yourhomebuyerassistance.com",
             subject:"Homebuyer Assistant Notification",
             html:content
@@ -127,10 +131,73 @@ app.post("/do-booking",async(req,res)=>{
 app.post("/request-call",async(req,res)=>{
     try {
         const {name,email,phone} = req.body.form;
-
         const request = new Request({
             name,phone,email
         });
+
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user:"azizulhakimashik0188@gmail.com",
+                pass:"01991393572abc",
+            }
+        });
+
+        const content = `
+        <html lang="en">
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <style>
+            .main{
+                padding: 0 20px;
+                max-width:450px;
+                margin:auto;
+            }
+            h1{
+                text-align:center;
+                margin-bottom:20px;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Request for a call from Homebuyer Assistant</h1>
+        <div class="main">
+            <div>
+              <div class="d-flex">
+                <b>Name :</b>
+                <span class="ms-2">${name}</span>
+              </div>
+              <div class="d-flex">
+                <b>Phone :</b>
+                <span class="ms-2">${phone}</span>
+              </div>
+              <div class="d-flex">
+                <b>Email :</b>
+                <span class="ms-2">${email}</span>
+              </div>
+            </div>
+          </div>
+    </body>
+    </html>
+        `;
+
+        const options = {
+            from:'"Homebuyer Assistant" <azizulhakimashik0188@gmail.com>',
+            to:"info@yourhomebuyerassistance.com",
+            subject:"Homebuyer Assistant Notification",
+            html:content
+        };
+
+        transporter.sendMail(options,(err,info)=>{
+            if(err){
+                console.log(err);
+            }else{
+                console.log("Message has been sent",info.response);
+            }
+        })
 
         await request.save();
 
