@@ -136,12 +136,15 @@ app.post("/request-call",async(req,res)=>{
         });
 
         const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
+            host: "smtp-mail.outlook.com",
+            secureConnection: false,
+            port: 587,
+            tls: {
+               ciphers:'SSLv3'
+            },
             auth:{
-                user:"azizulhakimashik0188@gmail.com",
-                pass:"01991393572abc",
+                user:process.env.MAIL_USER,
+                pass:process.env.MAIL_PASS
             }
         });
 
@@ -185,7 +188,7 @@ app.post("/request-call",async(req,res)=>{
         `;
 
         const options = {
-            from:'"Homebuyer Assistant" <azizulhakimashik0188@gmail.com>',
+            from:'"Homebuyer Assistant" <no-reply.homebuyer@hotmail.com>',
             to:"info@yourhomebuyerassistance.com",
             subject:"Homebuyer Assistant Notification",
             html:content
