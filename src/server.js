@@ -4,7 +4,7 @@ const app = express();
 const nodemailer = require("nodemailer");
 const path = require("path");
 
-const port = 8443 || process.env.PORT;
+const port = process.env.PORT || 8443;
 const Booking = require("./models/booking");
 const Request = require("./models/request");
 
